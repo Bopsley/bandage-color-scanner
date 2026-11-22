@@ -64,7 +64,7 @@ if uploaded_file is not None:
     st.write("Canvas image mode:", pil_image.mode)
 
     canvas_result = st_canvas(
-        background_image=Image.new("RGB", (600, 400), "red"),
+        background_image=pil_image,
         drawing_mode="rect",
         stroke_width=3,
         stroke_color="#00FF00",
