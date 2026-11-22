@@ -59,6 +59,10 @@ if uploaded_file is not None:
 
     # Show a rectangle drawing tool
     average_color = None
+    
+    st.write("Canvas image size:", pil_image.size)
+    st.write("Canvas image mode:", pil_image.mode)
+
     canvas_result = st_canvas(
         background_image=pil_image,
         drawing_mode="rect",
