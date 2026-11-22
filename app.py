@@ -54,7 +54,11 @@ if uploaded_file is not None:
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     pil_image = Image.fromarray(image_rgb)
 
+    # Resize the image to fit the canvas
+    pil_image = pil_image.resize((600, 400))
+
     # Show a rectangle drawing tool
+    average_color = None
     canvas_result = st_canvas(
         background_image=pil_image,
         drawing_mode="rect",
@@ -104,35 +108,37 @@ if uploaded_file is not None:
         st.info("Draw a rectangle around the colored gauze to measure it.")
 
 
-    # Show the result
-    st.subheader("Color Measurement")
-    st.write("Average color (BGR):", average_color)
-    
-    
-    # Compare the measured color with reference colors
-    st.subheader("Closest Reference Color")
+    # Show the result only if a rectangle was selected
+    if average_color is not None:
 
-    smallest_difference = float("inf")
-    closest_reference = None
+        st.subheader("Color Measurement")
+        st.write("Average color (BGR):", average_color)
 
-    for label, reference_color in reference_colors.items():
-        difference = np.linalg.norm(
-            average_color - reference_color
+        # Compare the measured color with reference colors
+        st.subheader("Closest Reference Color")
+
+        smallest_difference = float("inf")
+        closest_reference = None
+
+        for label, reference_color in reference_colors.items():
+            difference = np.linalg.norm(
+                average_color - reference_color
+            )
+
+            if difference < smallest_difference:
+                smallest_difference = difference
+                closest_reference = label
+
+            st.write(f"{label}: difference = {difference:.2f}")
+
+        st.success(f"Closest match: {closest_reference}")
+        st.write(f"Color difference: {smallest_difference:.2f}")
+
+        # Show the color in RGB order too
+        blue, green, red = average_color
+
+        st.write(
+            f"Red: {red:.1f}, "
+            f"Green: {green:.1f}, "
+            f"Blue: {blue:.1f}"
         )
-        
-        if difference < smallest_difference:
-            smallest_difference = difference
-            closest_reference = label
-
-        st.write(f"{label}: difference = {difference:.2f}")
-
-    st.success(f"Closest match: {closest_reference}")
-    st.write(f"Color difference: {smallest_difference:.2f}")
-    
-    # Show the color in RGB order too
-    blue, green, red = average_color
-    st.write(
-        f"Red: {red:.1f}, "
-        f"Green: {green:.1f}, "
-        f"Blue: {blue:.1f}"
-    )
